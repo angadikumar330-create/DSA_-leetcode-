@@ -1,0 +1,53 @@
+class Solution(object):
+    def numberOfStableArrays(self, zero, one, limit):
+        M = 10**9 + 7
+        dp = [[[0 for _ in range(2)] for _ in range(one+1)] for _ in range(zero+1)]
+
+        dp[0][0][0] = 1
+        dp[0][0][1] = 1
+
+        for z in range(zero+1):
+            for o in range(one+1):
+                if z == 0 and o == 0:
+                    continue
+
+                if z < limit:
+                    if z > 0:
+                        dp[z][o][1] = dp[z-1][o][0]
+                        if z > 1:
+                            dp[z][o][1] += dp[z-1][o][1]
+                elif z == limit:
+                    if z > 0:
+                        dp[z][o][1] = dp[z-1][o][0]
+                        if limit > 1:
+                            dp[z][o][1] += dp[z-1][o][1]
+                elif z > limit:
+                    dp[z][o][1] = dp[z-1][o][0]
+                    if limit > 1:
+                        dp[z][o][1] += dp[z-1][o][1] - dp[z-1-limit][o][0]
+
+                dp[z][o][1] %= M
+                dp[z][o][1] += M
+                dp[z][o][1] %= M
+
+                if o < limit:
+                    if o > 0:
+                        dp[z][o][0] = dp[z][o-1][1]
+                        if o > 1:
+                            dp[z][o][0] += dp[z][o-1][0]
+                elif o == limit:
+                    if o > 0:
+                        dp[z][o][0] = dp[z][o-1][1]
+                        if limit > 1:
+                            dp[z][o][0] += dp[z][o-1][0]
+                elif o > limit:
+                    dp[z][o][0] = dp[z][o-1][1]
+                    if limit > 1:
+                        dp[z][o][0] += dp[z][o-1][0] - dp[z][o-1-limit][1]
+
+                dp[z][o][0] %= M
+                dp[z][o][0] += M
+                dp[z][o][0] %= M
+
+        return (dp[zero][one][0] + dp[zero][one][1]) % M
+        
