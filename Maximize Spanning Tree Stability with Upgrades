@@ -1,0 +1,24 @@
+class Solution {
+    fun maxStability(n:Int,e:Array<IntArray>,k:Int):Int{
+        var l=0; var h=e.maxOf{it[2]}*2; var ans=-1
+        while(l<=h){
+            val m=(l+h)/2
+            if(ok(m,n,e,k)){ ans=m; l=m+1 } else h=m-1
+        }
+        return ans
+    }
+    fun ok(t:Int,n:Int,e:Array<IntArray>,k:Int):Boolean{
+        val p=IntArray(n){it}; val r=IntArray(n); var c=n; var cost=0; val half=(t+1)/2
+        fun f(x:Int):Int{ var v=x; while(p[v]!=v){p[v]=p[p[v]]; v=p[v]} ; return v }
+        fun u(a:Int,b:Int):Boolean{
+            var x=f(a); var y=f(b); if(x==y) return false
+            if(r[x]<r[y]){ val t=x; x=y; y=t }
+            p[y]=x; if(r[x]==r[y]) r[x]++; c--; return true
+        }
+        for(ed in e) if(ed[3]==1&&(ed[2]<t||!u(ed[0],ed[1]))) return false
+        for(ed in e) if(ed[3]==0&&ed[2]>=t) u(ed[0],ed[1])
+        if(c==1) return true
+        for(ed in e) if(ed[3]==0&&ed[2] in half until t&&u(ed[0],ed[1])) if(++cost>k) return false
+        return c==1
+    }
+}
