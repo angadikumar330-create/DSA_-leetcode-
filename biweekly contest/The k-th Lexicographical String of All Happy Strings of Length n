@@ -1,0 +1,27 @@
+class Solution(object):
+    def getHappyString(self, n, k):
+        res=[];
+        def func(s,l):
+            if(l==n):
+                res.append(s);
+                return;
+            if(s[-1]=="a"):
+                func(s+"b",l+1);
+                func(s+"c",l+1);
+            elif(s[-1]=="b"):
+                func(s+"a",l+1);
+                func(s+"c",l+1);
+            else:
+                func(s+"a",l+1);
+                func(s+"b",l+1);
+        func("a",1);
+        func("b",1);
+        func("c",1);
+        if(len(res)<k):
+            return ""
+        return sorted(res)[k-1]
+        """
+        :type n: int
+        :type k: int
+        :rtype: str
+        """
