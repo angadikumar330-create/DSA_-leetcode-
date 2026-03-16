@@ -1,0 +1,76 @@
+class Solution:
+    def getBiggestThree(self, grid):
+
+        # store top 3 unique rhombus sums (largest -> smallest)
+        arr = [-1,-1,-1]
+
+        rows = len(grid)
+        cols = len(grid[0])
+
+        # update the top 3 values if the new value qualifies
+        def update(val):
+
+            # ignore duplicates
+            if val in arr:
+                return
+
+            # insert val in correct position
+            if val > arr[0]:
+                arr[2] = arr[1]
+                arr[1] = arr[0]
+                arr[0] = val
+            elif val > arr[1]:
+                arr[2] = arr[1]
+                arr[1] = val
+            elif val > arr[2]:
+                arr[2] = val
+
+        # maximum possible rhombus size
+        max_size = min(rows, cols)
+
+        # try all possible rhombus sizes (largest first)
+        for size in range(max_size, 0, -1):
+
+            s = size - 1
+
+            for i in range(rows):
+                for j in range(cols):
+
+                    # size 1 means a single cell
+                    if size == 1:
+                        update(grid[i][j])
+                        continue
+
+                    # compute boundary coordinates of rhombus
+                    left = j - s
+                    right = j + s
+                    bottom = i + 2*s
+
+                    # skip if rhombus goes outside grid
+                    if left < 0 or right >= cols or bottom >= rows:
+                        continue
+
+                    sum_val = 0
+
+                    # traverse top -> right edge
+                    for k in range(1,size):
+                        sum_val += grid[i+k][j+k]
+
+                    # traverse right -> bottom edge
+                    for k in range(1,size):
+                        sum_val += grid[i+s+k][j+s-k]
+
+                    # traverse bottom -> left edge
+                    for k in range(1,size):
+                        sum_val += grid[bottom-k][j-k]
+
+                    # traverse left -> top edge
+                    for k in range(1,size):
+                        sum_val += grid[i+s-k][left+k]
+
+                    # update answer if this sum is large enough
+                    if sum_val > arr[2]:
+                        update(sum_val)
+
+        # remove unused -1 values
+        return [v for v in arr if v != -1]
